@@ -46,8 +46,7 @@ object ReverseFile {
 
   def main(args: Array[String]) {
     //Source.fromFile(reverseFile("E:\\projects\\scala\\howtouse\\src\\File.txt", "E:\\projects\\scala\\howtouse\\src\\ReverseFile")).getLines().foreach(println)
-    Source.fromFile(tab2Space("D:/IdeaProjects/scala/howtouse/src/File.txt", "D:/IdeaProjects/scala/howtouse/src/ReverseFile")).getLines().foreach(println)
+    Source.fromFile(tab2Space("D:/IdeaProjects/scala/howtouse/src/main/java/File.txt", "D:/IdeaProjects/scala/howtouse/src/main/java/ReverseFile")).getLines().foreach(println)
+
   }
 }
-
-//
