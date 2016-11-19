@@ -31,10 +31,10 @@ object Utils {
   private[jdbc] def verifySuccessWithInfo(status: TStatus) = verifySuccess(status, withInfo = true)
 
   @throws[SQLException]
-  private[jdbc] def verifySuccess(status: TStatus) = verifySuccess(status, withInfo = false)
+  private[jdbc] def verifySuccess(status: TStatus): Unit = verifySuccess(status, withInfo = false)
 
   @throws[SQLException]
-  private[jdbc] def verifySuccess(status: TStatus, withInfo: Boolean) {
+  private[jdbc] def verifySuccess(status: TStatus, withInfo: Boolean): Unit = {
     if ((status.getStatusCode ne TStatusCode.SUCCESS_STATUS) && (!withInfo || (status.getStatusCode ne TStatusCode.SUCCESS_WITH_INFO_STATUS))) throw new HiveSQLException(status)
   }
 
@@ -52,7 +52,7 @@ object Utils {
     LOG.warn("***** JDBC param deprecation *****")
     LOG.warn("The use of " + deprecatedName + " is deprecated.")
     LOG.warn("Please use " + newName + " like so: " + newUsage)
-    fromMap ++ Map(newName, fromMap.get(deprecatedName))
+    fromMap ++ Map(newName -> fromMap.get(deprecatedName))
     fromMap - deprecatedName
   }
 
@@ -75,7 +75,6 @@ object Utils {
     stringBuilder.toString
   }
 
-  @throws[JdbcUriParseException][ZooKeeperHiveClientException]
   private def configureConnParams(connParams: Utils.JdbcConnectionParams) {
     val serviceDiscoveryMode = connParams.sessionVars(JdbcConnectionParams.SERVICE_DISCOVERY_MODE)
     if ((serviceDiscoveryMode != null) &&
@@ -106,7 +105,6 @@ object Utils {
     }
   }
 
-  @throws[JdbcUriParseException][SQLException][ZooKeeperHiveClientException]
   private[jdbc] def parseURL(uri: String, info: Properties): Utils.JdbcConnectionParams = {
     val connParams: Utils.JdbcConnectionParams = new Utils.JdbcConnectionParams
     var uri1 = uri
@@ -183,8 +181,8 @@ object Utils {
     }
 
     // Apply configs supplied in the JDBC connection properties object
-    for (kv <- info.keys()) {
-      kv match {
+    while (info.keys.hasMoreElements) {
+      info.keys().nextElement() match {
         case key: String =>
           if (key.startsWith(JdbcConnectionParams.HIVE_VAR_PREFIX))
             connParams.hiveVars ++ Map(key.substring(JdbcConnectionParams.HIVE_VAR_PREFIX.length) -> info.getProperty(key))
@@ -269,7 +267,7 @@ object Utils {
     var toIndex: Int = -1
     val toIndexChars: List[String] = List[String]("/", "?", "#")
     var foundIndex = false
-    for (toIndexChar <- toIndexChars; foundIndex) {
+    for (toIndexChar <- toIndexChars; if foundIndex) {
       toIndex = uri.indexOf(toIndexChar, fromIndex)
       if (toIndex > 0) {
         foundIndex = true

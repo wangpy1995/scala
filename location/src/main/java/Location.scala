@@ -1,3 +1,4 @@
+/**
   * Created by w5921 on 2016/10/16.
   */
 abstract class Location {

@@ -33,10 +33,10 @@ class ReservoirSample {
 
 object TestRandom {
   def main(args: Array[String]): Unit = {
-    val writer = new PrintWriter(new FileWriter("e:/words.log", true))
+    val writer = new PrintWriter(new FileWriter("words.log", true))
     val reservoir = new ReservoirSample
     for (i <- 1 to 10000000) {
-      reservoir.reservoir("e:/words.txt", 1).foreach(line => writer.write(line + "\n"))
+      reservoir.reservoir("words.txt", 1).foreach(line => writer.write(line + "\n"))
     }
     writer.close()
   }
