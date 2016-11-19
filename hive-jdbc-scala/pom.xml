@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>wpy.scala</groupId>
+    <parent>
+        <groupId>wpy</groupId>
+        <artifactId>mvnsetting</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../mvnsetting/</relativePath>
+    </parent>
     <artifactId>hive-jdbc-scala</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-    </properties>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.hive/hive-jdbc -->
@@ -20,17 +20,4 @@
             <version>2.1.0</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>RELEASE</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
