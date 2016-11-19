@@ -32,7 +32,7 @@
                 <artifactId>tools</artifactId>
                 <version>${java.version}</version>
                 <scope>system</scope>
-                <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+                <systemPath>${java.home}/../lib/tools.jar</systemPath>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
             <dependency>
