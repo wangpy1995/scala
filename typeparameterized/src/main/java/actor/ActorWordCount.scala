@@ -1,9 +1,7 @@
 package actor
 
-import java.io.File
 
 import scala.actors.{Actor, Future}
-import scala.collection.immutable.HashSet
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
