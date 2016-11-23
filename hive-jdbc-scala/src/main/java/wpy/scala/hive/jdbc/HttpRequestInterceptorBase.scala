@@ -19,7 +19,7 @@ abstract class HttpRequestInterceptorBase(cookieStore: CookieStore, cookieName: 
 
     if (!this.isCookieEnabled ||
       httpContext.getAttribute("hive.server2.retryserver") == null &&
-        (this.cookieStore == null || this.cookieStore != null && Utils.needToSendCredentials(this.cookieStore, this.cookieName, this.isSSL)) ||
+        (this.cookieStore == null || this.cookieStore != null /*&& Utils.needToSendCredentials(this.cookieStore, this.cookieName, this.isSSL)*/) ||
       httpContext.getAttribute("hive.server2.retryserver") != null &&
         httpContext.getAttribute("hive.server2.retryserver") == "true") {
       this.addHttpAuthHeader(httpRequest, httpContext)

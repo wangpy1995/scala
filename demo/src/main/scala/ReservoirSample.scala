@@ -1,13 +1,15 @@
 import java.io.{FileWriter, PrintWriter}
 
+import scala.actors.{Actor, Future}
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.io.Source
 import scala.util.Random
 
 /**
   * Created by w5921 on 2016/11/19.
   */
-class ReservoirSample {
-  def reservoir(file: String, k: Int): Array[String] = {
+class ReservoirSample(val file: String, val k: Int) extends Actor {
+  def reservoir(): Array[String] = {
     val lines = Source.fromFile(file).getLines()
     val arr = new Array[String](k)
     var i = 0
@@ -29,16 +31,41 @@ class ReservoirSample {
     arr
   }
 
+  override def act(): Unit = {
+    react {
+      case "start" => {
+        sender ! reservoir()
+        act
+      }
+      case "stop" => exit()
+    }
+  }
 }
 
 object TestRandom {
   def main(args: Array[String]): Unit = {
-    val writer = new PrintWriter(new FileWriter("e:/words.log", true))
-    val reservoir = new ReservoirSample
-    for (i <- 1 to 10000000) {
-      reservoir.reservoir("e:/words.txt", 1).foreach(line => writer.write(line + "\n"))
+    val replyList = new ListBuffer[Future[Any]]()
+    val resultList = new ListBuffer[Array[String]]()
+    val writer = new PrintWriter(new FileWriter("./demo/words.log", true))
+    for (i <- 1 to 10) {
+      val reservoir = new ReservoirSample("./demo/words.txt", 1)
+      val reply = reservoir.start() !! "start"
+      replyList += reply
+      reservoir !! "stop"
     }
-    writer.close()
-  }
 
+    while (replyList != null) {
+      val toString = replyList.filter(_.isSet)
+      for (s <- toString) {
+        resultList += s().asInstanceOf[Array[String]]
+        replyList -= s
+      }
+    }
+    resultList.foreach(s => writer.write(s + "\n"))
+    writer.close()
+    /*for (i <- 1 to 100) {
+      val reservoir = new ReservoirSample("./demo/words.txt", 1)
+      reservoir.reservoir().foreach(r => println(s"$i $r"))
+    }*/
+  }
 }
