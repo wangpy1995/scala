@@ -269,7 +269,7 @@ object Utils {
     var toIndex: Int = -1
     val toIndexChars: List[String] = List[String]("/", "?", "#")
     var foundIndex = false
-    for (toIndexChar <- toIndexChars; foundIndex) {
+    for (toIndexChar <- toIndexChars; if foundIndex) {
       toIndex = uri.indexOf(toIndexChar, fromIndex)
       if (toIndex > 0) {
         foundIndex = true

@@ -13,7 +13,6 @@ abstract class HttpRequestInterceptorBase(cookieStore: CookieStore, cookieName: 
 
   private val isCookieEnabled = cookieStore != null
 
-  @throws[HttpException][IOException]
   override def process(httpRequest: HttpRequest, httpContext: HttpContext): Unit = {
     if (this.cookieStore != null)
       httpContext.setAttribute("http.cookie-store", this.cookieStore)
