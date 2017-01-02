@@ -12,18 +12,18 @@ object TestSparkWordCount {
     ss.sparkContext.textFile("./demo/words.log").map((_, 1)).reduceByKey(_ + _).collect().foreach(println)
   }
 
-  def testHbase(): Unit = {
-    val writeCatalog = " "
-    val tsSpecified = TimeStampedValue
-    val conf = new SparkConf().setAppName("testHbase").setMaster("local[")
-    val sqlContext = SparkSession.builder().config(conf).getOrCreate().sqlContext
-    val df = sqlContext.read
-      .options(Map(HBaseTableCatalog.tableCatalog -> writeCatalog, HBaseSparkConf.TIMESTAMP -> tsSpecified.toString))
-      .format("org.apache.hadoop.hbase.spark")
-      .load()
-    df.registerTempTable("table")
-    sqlContext.sql("select count(*) from table").show
-  }
+  /*  def testHbase(): Unit = {
+      val writeCatalog = " "
+      val tsSpecified = TimeStampedValue
+      val conf = new SparkConf().setAppName("testHbase").setMaster("local[")
+      val sqlContext = SparkSession.builder().config(conf).getOrCreate().sqlContext
+      val df = sqlContext.read
+        .options(Map(HBaseTableCatalog.tableCatalog -> writeCatalog, HBaseSparkConf.TIMESTAMP -> tsSpecified.toString))
+        .format("org.apache.hadoop.hbase.spark")
+        .load()
+      df.registerTempTable("table")
+      sqlContext.sql("select count(*) from table").show
+    }*/
 }
 
 object HBaseTableCatalog {
