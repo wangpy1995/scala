@@ -23,6 +23,7 @@
         <module>../location</module>
         <module>../spark2.11_mvn</module>
         <module>../typeparameterized</module>
+        <module>../scalalearning</module>
     </modules>
 
     <dependencyManagement>
