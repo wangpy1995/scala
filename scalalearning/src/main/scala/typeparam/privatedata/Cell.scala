@@ -22,4 +22,5 @@ class Cell[+T, -U](init: T) {
   def printValue(): Unit = {
     println(current + " " + next)
   }
+
 }
