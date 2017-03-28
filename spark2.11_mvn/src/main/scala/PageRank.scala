@@ -1,3 +1,5 @@
+import java.io.File
+
 import org.apache.spark.{HashPartitioner, SparkConf}
 import org.apache.spark.sql.SparkSession
 
@@ -12,7 +14,7 @@ object PageRank {
 
   def pageRank(): Unit = {
     //collect data
-    val links = sc.textFile("/home/wpy/文档/IdeaProjects/scala/spark2.11_mvn/src/main/resources/link.data")
+    val links = sc.textFile(getClass.getResource("/link.data").getFile)
       .map(x => (x.split(" ")(0), x.split(" ").drop(1).toSeq)).partitionBy(new HashPartitioner(1)).persist()
     var ranks = links.mapValues(v => 1.0)
     //join
@@ -24,7 +26,8 @@ object PageRank {
     //eq: (www.sina.com,0.3333333333333333)
     ranks = contribution.reduceByKey(_ + _).mapValues(v => 0.15 + 0.85 * v)
     //    }
-    ranks.saveAsTextFile("/home/wpy/文档/IdeaProjects/scala/spark2.11_mvn/src/main/resources/rank")
+    val rank = new File(getClass.getResource("").getFile)
+    ranks.saveAsTextFile(rank.getPath+"/rank")
     //    ranks.foreach(println)
   }
 
