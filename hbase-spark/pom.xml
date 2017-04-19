@@ -34,14 +34,14 @@
         <relativePath>../mvnsetting</relativePath>
     </parent>
     <artifactId>hbase-spark</artifactId>
-    <name>HBase - Spark2.0</name>
+    <name>HBase - Spark2</name>
     <description>change spark 1.6.0 to 2.1.0,rely on Apache HBase 2.0.0</description>
 
     <properties>
         <spark.version>2.1.0</spark.version>
-        <top.dir>${project.basedir}/..</top.dir>
+        <!--<top.dir>${project.basedir}/..</top.dir>-->
         <avro.version>1.7.6</avro.version>
-        <avro.mapred.classifier></avro.mapred.classifier>
+        <!--<avro.mapred.classifier></avro.mapred.classifier>-->
     </properties>
 
     <dependencies>
@@ -531,6 +531,11 @@
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.9.Final</version>
         </dependency>
     </dependencies>
 
