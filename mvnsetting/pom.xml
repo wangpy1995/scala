@@ -29,7 +29,8 @@
         <!--<module>../spark2.11_mvn</module>-->
         <!--<module>../typeparameterized</module>-->
         <!--<module>../scalalearning</module>-->
-        <module>../hbase-spark</module>
+        <!--<module>../hbase-spark</module>-->
+        <!--<module>../sparksql-hbase</module>-->
     </modules>
 
     <pluginRepositories>
