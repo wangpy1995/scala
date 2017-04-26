@@ -31,6 +31,7 @@
         <!--<module>../scalalearning</module>-->
         <!--<module>../hbase-spark</module>-->
         <!--<module>../sparksql-hbase</module>-->
+        <module>../sparksql-external</module>
     </modules>
 
     <pluginRepositories>
