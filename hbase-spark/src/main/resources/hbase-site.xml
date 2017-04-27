@@ -21,4 +21,8 @@
  */
 -->
 <configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>file:///home/wpy/tmp/hbase</value>
+    </property>
 </configuration>

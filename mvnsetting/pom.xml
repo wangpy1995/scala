@@ -29,9 +29,9 @@
         <!--<module>../spark2.11_mvn</module>-->
         <!--<module>../typeparameterized</module>-->
         <!--<module>../scalalearning</module>-->
-        <!--<module>../hbase-spark</module>-->
+        <module>../hbase-spark</module>
         <!--<module>../sparksql-hbase</module>-->
-        <module>../sparksql-external</module>
+        <!--<module>../sparksql-external</module>-->
     </modules>
 
     <pluginRepositories>
@@ -62,6 +62,11 @@
             <dependency>
                 <artifactId>hbase-client</artifactId>
                 <groupId>org.apache.hbase</groupId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
