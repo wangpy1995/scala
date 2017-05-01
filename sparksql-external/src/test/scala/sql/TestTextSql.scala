@@ -28,20 +28,26 @@ object TestTextSql {
     ts.sql("select * from test1").show
 
     print("=============================================\n")
-    ts.sql(
-      """create table test2(
-        |word string,
-        |num string
-        |) using external.datasource.TextSource
-        |options(
-        |path '/home/wpy/tmp/external_sql/test2'
-        |)
-      """.stripMargin)
+    /*    ts.sql(
+          """create table test2(
+            |word string,
+            |num int
+            |) using external.datasource.TextSource
+            |options(
+            |path '/home/wpy/tmp/external_sql/test2'
+            |)
+          """.stripMargin)*/
     ts.sql(
       """
-        |insert into table test2
-        |select * from test1
+        |CREATE TABLE test2
+        |USING external.datasource.TextSource
+        | OPTIONS(
+        |path '/home/wpy/tmp/external_sql/test2'
+        |)
+        |as select * from test1
       """.stripMargin)
-    ts.sql("select * from test2 order by word").show
+    ts.sql("select * from wpy.test2 order by word").show
+    //    val rdd = sparkContext.wholeTextFiles("/home/wpy/tmp/external_sql/test2/[0-9]*").collect()
+    //    rdd.foreach(println)
   }
 }
