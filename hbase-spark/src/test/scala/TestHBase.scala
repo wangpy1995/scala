@@ -7,9 +7,10 @@ import org.apache.hadoop.hbase.regionserver.BloomType
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.mapred.JobConf
 import org.apache.hadoop.mapreduce.Job
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.rdd.NewHadoopRDD
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.{HBaseContext, SparkConf, SparkContext}
 
 import scala.util.Random
 
@@ -18,7 +19,6 @@ import scala.util.Random
   */
 object TestHBase {
 
-  val tableName = "wpy:test"
 
   val conf = HBaseConfiguration.create()
   val conn = ConnectionFactory.createConnection(conf)
@@ -38,6 +38,7 @@ object TestHBase {
   }
 
   def distributeScan(): Unit = {
+    val tableName = "wpy:test"
     val sparkConf = new SparkConf().setAppName("HBaseDistributedScanExample " + tableName).setMaster("local[*]")
     sparkConf.registerKryoClasses(Array(classOf[ImmutableBytesWritable]))
     val sc = new SparkContext(sparkConf)
@@ -58,6 +59,7 @@ object TestHBase {
   }
 
   def put(): Unit = {
+    val tableName = "wpy:test"
     val table = conn.getTable(TableName.valueOf(tableName))
     for (i <- 1 to 100) {
       val put = new Put(Bytes.toBytes(i.formatted("%03d").toString))
@@ -68,10 +70,51 @@ object TestHBase {
     table.close()
   }
 
+  def sql(): Unit = {
+    val tn = "wpy:test"
+    val sparkConf = new SparkConf().setAppName("HBaseDistributedScanExample " + tn).setMaster("local[*]")
+    sparkConf.registerKryoClasses(Array(classOf[ImmutableBytesWritable]))
+    val sc = new SparkContext(sparkConf)
+    val hc = new HBaseContext(sc, conf)
+    val ss = SparkSession.builder().config(sparkConf).getOrCreate()
+    val catalog =
+      s"""{
+         |"table":{"namespace":"default", "name":"htable"},
+         |"rowkey":"key1:key2",
+         |"columns":{
+         |"col1":{"cf":"rowkey", "col":"key1", "type":"string"},
+         |"col2":{"cf":"rowkey", "col":"key2", "type":"double"},
+         |"col3":{"cf":"cf1", "col":"col2", "type":"binary"},
+         |"col4":{"cf":"cf1", "col":"col3", "type":"timestamp"}
+         |}
+         |}""".stripMargin
+    ss.sql(
+      s"""
+         |CREATE TEMPORARY TABLE test
+         |USING org.apache.spark.DefaultSource
+      """.stripMargin)
+
+    ss.sql(
+      """
+        |INSERT INTO test(
+        |id,name,age
+        |) VALUES(01,wang_py,54)
+        |USING org.apache.spark.DefaultSource
+      """.stripMargin)
+
+    ss.sql(
+      """
+        |SELECT * FROM test
+      """.stripMargin).show()
+
+    ss.close()
+  }
+
   def main(args: Array[String]): Unit = {
     //    createTable(tableName)
     //    put()
-    distributeScan()
+    //    distributeScan()
+    sql()
     //    conn.close()
   }
 

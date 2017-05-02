@@ -17,28 +17,23 @@
 
 package org.apache.spark
 
-import java.util
 import java.util.concurrent.ConcurrentLinkedQueue
 
+import org.apache.hadoop.hbase._
 import org.apache.hadoop.hbase.classification.InterfaceAudience
 import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
 import org.apache.hadoop.hbase.mapred.TableOutputFormat
 import org.apache.hadoop.hbase.types._
 import org.apache.hadoop.hbase.util.{Bytes, PositionedByteRange, SimplePositionedMutableByteRange}
-import org.apache.hadoop.hbase.HBaseConfiguration
-import org.apache.hadoop.hbase.HTableDescriptor
-import org.apache.hadoop.hbase.HColumnDescriptor
-import org.apache.hadoop.hbase.TableName
-import org.apache.hadoop.hbase.CellUtil
 import org.apache.hadoop.mapred.JobConf
 import org.apache.spark.datasources.{HBaseSparkConf, HBaseTableScanRDD, JavaBytesEncoder}
 import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.datasource.hbase.{Field, HBaseTableCatalog, Utils}
-import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types._
+import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.util.SerializableConfiguration
 
 import scala.collection.mutable
@@ -69,7 +64,7 @@ class DefaultSource extends RelationProvider with CreatableRelationProvider with
   override def createRelation(sqlContext: SQLContext,
                               parameters: Map[String, String]):
   BaseRelation = {
-    new HBaseRelation(parameters, None)(sqlContext)
+    HBaseRelation(parameters, None)(sqlContext)
   }
 
 
@@ -156,11 +151,9 @@ case class HBaseRelation(
   def createTable() {
     val numReg = parameters.get(HBaseTableCatalog.newTable).map(x => x.toInt).getOrElse(0)
     val startKey = Bytes.toBytes(
-      parameters.get(HBaseTableCatalog.regionStart)
-        .getOrElse(HBaseTableCatalog.defaultRegionStart))
+      parameters.getOrElse(HBaseTableCatalog.regionStart, HBaseTableCatalog.defaultRegionStart))
     val endKey = Bytes.toBytes(
-      parameters.get(HBaseTableCatalog.regionEnd)
-        .getOrElse(HBaseTableCatalog.defaultRegionEnd))
+      parameters.getOrElse(HBaseTableCatalog.regionEnd, HBaseTableCatalog.defaultRegionEnd))
     if (numReg > 3) {
       val tName = TableName.valueOf(catalog.name)
       val cfs = catalog.getColumnFamilies
@@ -235,11 +228,11 @@ case class HBaseRelation(
       (new ImmutableBytesWritable, put)
     }
 
-    rdd.map(convertToPut(_)).saveAsHadoopDataset(jobConfig)
+    rdd.map(convertToPut).saveAsHadoopDataset(jobConfig)
   }
 
   def getIndexedProjections(requiredColumns: Array[String]): Seq[(Field, Int)] = {
-    requiredColumns.map(catalog.sMap.getField(_)).zipWithIndex
+    requiredColumns.map(catalog.sMap.getField).zipWithIndex
   }
 
 

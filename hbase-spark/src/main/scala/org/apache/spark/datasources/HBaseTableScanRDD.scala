@@ -19,17 +19,21 @@ package org.apache.spark.datasources
 
 import java.util.ArrayList
 
+import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.classification.InterfaceAudience
 import org.apache.hadoop.hbase.client._
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.mapreduce.{IdentityTableMapper, TableInputFormat, TableMapReduceUtil}
 import org.apache.hadoop.hbase.util.ShutdownHookManager
-import org.apache.spark.rdd.RDD
+import org.apache.hadoop.mapreduce.Job
 import org.apache.spark._
-import org.apache.spark.internal.Logging
-import org.apache.spark.spark.HBaseType
-import org.apache.spark.sql.datasource.hbase.Field
-import org.apache.spark.spark._
-import scala.collection.mutable
 import org.apache.spark.datasources.HBaseResources._
+import org.apache.spark.internal.Logging
+import org.apache.spark.rdd.RDD
+import org.apache.spark.spark.{HBaseType, _}
+import org.apache.spark.sql.datasource.hbase.Field
+
+import scala.collection.mutable
 
 @InterfaceAudience.Private
 class HBaseTableScanRDD(relation: HBaseRelation,
@@ -163,9 +167,9 @@ class HBaseTableScanRDD(relation: HBaseRelation,
                         filter: Option[SparkSQLPushDownFilter],
                         columns: Seq[Field]): Scan = {
     val scan = (range.lower, range.upper) match {
-      case (Some(Bound(a, b)), Some(Bound(c, d))) => new Scan(a, c)
-      case (None, Some(Bound(c, d))) => new Scan(Array[Byte](), c)
-      case (Some(Bound(a, b)), None) => new Scan(a)
+      case (Some(Bound(a, b)), Some(Bound(c, d))) => new Scan().withStartRow(a).withStopRow(c)
+      case (None, Some(Bound(c, d))) => new Scan().withStopRow(c)
+      case (Some(Bound(a, b)), None) => new Scan().withStartRow(a)
       case (None, None) => new Scan()
     }
     handleTimeSemantics(scan)
@@ -229,16 +233,25 @@ class HBaseTableScanRDD(relation: HBaseRelation,
         buildGets(tableResource, points, filter, columns, hbaseContext)
       }
     }
-    val rIts = scans.par
+    /*val rIts = scans.par
       .map { scan =>
         hbaseContext.applyCreds()
         val scanner = tableResource.getScanner(scan)
         rddResources.addResource(scanner)
         scanner
-      }.map(toResultIterator(_))
+      }.map(toResultIterator)
       .fold(Iterator.empty: Iterator[Result]) { case (x, y) =>
         x ++ y
-      } ++ gIt
+      } ++ gIt*/
+    val conf = HBaseConfiguration.create()
+    val rIts = scans.par.map { scan =>
+      val job = Job.getInstance(conf)
+      TableMapReduceUtil.initCredentials(job)
+      TableMapReduceUtil.initTableMapperJob(tableResource.table.getName, scan, classOf[IdentityTableMapper], null, null, job)
+      new NewHBaseRDD(sparkContext, classOf[TableInputFormat], classOf[ImmutableBytesWritable], classOf[Result], job.getConfiguration, hbaseContext).map((r: (ImmutableBytesWritable, Result)) => r._2).iterator(split, context)
+    }.fold(Iterator.empty: Iterator[Result]) {
+      case (x, y) => x ++ y
+    } ++ gIt
     ShutdownHookManager.affixShutdownHook(new Thread() {
       override def run() {
         HBaseConnectionCache.close()

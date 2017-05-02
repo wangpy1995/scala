@@ -46,6 +46,7 @@ class HBaseContext(@transient sc: SparkContext,
                    val tmpHdfsConfgFile: String = null)
   extends Serializable with Logging {
 
+
   @transient var credentials = SparkHadoopUtil.get.getCurrentUserCredentials()
   @transient var tmpHdfsConfiguration: Configuration = config
   @transient var appliedCredentials = false

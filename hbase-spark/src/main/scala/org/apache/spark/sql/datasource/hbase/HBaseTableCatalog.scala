@@ -257,26 +257,26 @@ object HBaseTableCatalog {
     //  println(jString)
     val jString = parameters(tableCatalog)
     val map = parse(jString).values.asInstanceOf[Map[String, _]]
-    val tableMeta = map.get(table).get.asInstanceOf[Map[String, _]]
-    val nSpace = tableMeta.get(nameSpace).getOrElse("default").asInstanceOf[String]
-    val tName = tableMeta.get(tableName).get.asInstanceOf[String]
-    val cIter = map.get(columns).get.asInstanceOf[Map[String, Map[String, String]]].toIterator
+    val tableMeta = map(table).asInstanceOf[Map[String, _]]
+    val nSpace = tableMeta.getOrElse(nameSpace, "default").asInstanceOf[String]
+    val tName = tableMeta(tableName).asInstanceOf[String]
+    val cIter = map(columns).asInstanceOf[Map[String, Map[String, String]]].toIterator
     val schemaMap = mutable.HashMap.empty[String, Field]
     cIter.foreach { case (name, column) =>
       val sd = {
-        column.get(serdes).asInstanceOf[Option[String]].map(n =>
+        column.get(serdes).map(n =>
           Class.forName(n).newInstance().asInstanceOf[SerDes]
         )
       }
       val len = column.get(length).map(_.toInt).getOrElse(-1)
       val sAvro = column.get(avro).map(parameters(_))
       val f = Field(name, column.getOrElse(cf, rowKey),
-        column.get(col).get,
+        column(col),
         column.get(`type`),
         sAvro, sd, len)
       schemaMap.+=((name, f))
     }
-    val rKey = RowKey(map.get(rowKey).get.asInstanceOf[String])
+    val rKey = RowKey(map(rowKey).asInstanceOf[String])
     HBaseTableCatalog(nSpace, tName, rKey, SchemaMap(schemaMap), parameters)
   }
 
@@ -302,7 +302,7 @@ object HBaseTableCatalog {
   @deprecated("Please use new json format to define HBaseCatalog")
   // TODO: There is no need to deprecate since this is the first release.
   def convert(parameters: Map[String, String]): Map[String, String] = {
-    val tableName = parameters.get(TABLE_KEY).getOrElse(null)
+    val tableName = parameters.getOrElse(TABLE_KEY, null)
     // if the hbase.table is not defined, we assume it is json format already.
     if (tableName == null) return parameters
     val schemaMappingString = parameters.getOrElse(SCHEMA_COLUMNS_MAPPING_KEY, "")
