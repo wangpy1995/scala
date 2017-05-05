@@ -11,8 +11,8 @@ import scala.reflect.ClassTag
   * Created by wpy on 2017/5/2.
   */
 class SinglePartitionRDD[T: ClassTag, +U](sc: SparkContext, rdd: RDD[T], accumulator: CollectionAccumulator[U]) extends RDD[T](sc, Nil) {
-
-  val l = rdd.getNumPartitions.asInstanceOf[U]
+  //TODO used for accumulator
+  //  val l = rdd.getNumPartitions.asInstanceOf[U]
 
   override def getDependencies: Seq[Dependency[_]] = {
     val deps = new ArrayBuffer[Dependency[_]]
@@ -23,7 +23,7 @@ class SinglePartitionRDD[T: ClassTag, +U](sc: SparkContext, rdd: RDD[T], accumul
   }
 
   override def compute(s: Partition, context: TaskContext): Iterator[T] = {
-    accumulator.add(l)
+    //    accumulator.add(l)
     val parts = s.asInstanceOf[TempPartition]
     //    part => parent[T](part.parentRddIndex).iterator(part.parentPartition, context)
     parts.parentPartition.flatMap(part => parent[T](parts.index).iterator(part, context)).iterator
