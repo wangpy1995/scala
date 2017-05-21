@@ -8,17 +8,17 @@ import scala.math.BigDecimal.RoundingMode
   */
 class ElectricityBill {
 
-  val lastMonth = Array[Double](775.0, 12345.0, 123.0, 234.0, 356.0)
-  val thisMonth = Array[Double](815.0, 12456.0, 234.0, 345.0, 465.0)
+  val lastMonth = Array[Double](761.7, 15389.9, 17189.1, 13380.1, 23482.8)
+  val thisMonth = Array[Double](774.0, 15656.0, 17526.0, 13850.0, 23739.0)
   val names = Array[String]("公用", "上北", "上南", "下北", "下南")
-  val money = 1299.0
+  val money = 710.30
 
-  val charge = BigDecimal(money / (thisMonth.sum - lastMonth.sum)).setScale(3,RoundingMode.HALF_UP).doubleValue()
+  val charge = money / (thisMonth.sum - lastMonth.sum)
 
   val b = new Array[Bill](lastMonth.length)
   for (i <- lastMonth.indices) {
-    val c = (thisMonth(i) - lastMonth(i)) * charge
-    b(i) = Bill(names(i), thisMonth(i), lastMonth(i), thisMonth(i) - lastMonth(i), c)
+    val c = BigDecimal((thisMonth(i) - lastMonth(i)) * charge).setScale(2, RoundingMode.HALF_UP).doubleValue()
+    b(i) = Bill(names(i), thisMonth(i), lastMonth(i), BigDecimal(thisMonth(i) - lastMonth(i)).setScale(2, RoundingMode.HALF_UP).doubleValue(), c)
   }
 
 
