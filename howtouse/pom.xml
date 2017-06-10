@@ -7,8 +7,21 @@
     <parent>
         <groupId>wpy</groupId>
         <artifactId>mvnsetting</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <relativePath>../mvnsetting/</relativePath>
     </parent>
     <artifactId>howtouse</artifactId>
+
+    <build>
+ <!--       <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>-->
+    </build>
 </project>

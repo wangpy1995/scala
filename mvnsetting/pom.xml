@@ -24,22 +24,22 @@
     <modules>
         <!--<module>../demo/</module>-->
         <!--<module>../hive-jdbc-scala</module>-->
-        <!--<module>../howtouse</module>-->
-        <!--<module>../location</module>-->
+        <module>../howtouse</module>
+        <module>../location</module>
         <!--<module>../spark2.11_mvn</module>-->
         <!--<module>../typeparameterized</module>-->
-        <module>../scalalearning</module>
+        <!--<module>../scalalearning</module>-->
         <!--<module>../hbase-spark</module>-->
         <!--<module>../sparksql-hbase</module>-->
         <!--<module>../sparksql-external</module>-->
     </modules>
 
-<!--    <pluginRepositories>
+    <pluginRepositories>
         <pluginRepository>
             <id>apache.snapshots</id>
             <url>http://repository.apache.org/snapshots/</url>
         </pluginRepository>
-    </pluginRepositories>-->
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
