@@ -26,7 +26,9 @@ object Test {
     FileInputFormat.setInputPaths(conf, files.map(_.getPath).mkString(","))
     val job = Job.getInstance(conf)
     FileMapperUtil.initFileMapJob(files, classOf[IdentityFileMapper], classOf[LongWritable], classOf[Text], job, classOf[MyFileInputFormat])
-    new NewHadoopRDD(sc, classOf[MyFileInputFormat], classOf[LongWritable], classOf[Text], conf).mapPartitions { kv =>
+    val rdd= new NewHadoopRDD(sc, classOf[MyFileInputFormat], classOf[LongWritable], classOf[Text], conf)
+    rdd.partitions
+      rdd.mapPartitions{ kv =>
       val data = kv.toSeq
       Sorting.stableSort(data, (a: (LongWritable, Text), b: (LongWritable, Text)) => a._1.get() < b._1.get()).iterator
     }.saveAsTextFile("/home/wpy/tmp/hadoop_out")

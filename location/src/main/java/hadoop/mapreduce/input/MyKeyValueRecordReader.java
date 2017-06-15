@@ -1,5 +1,7 @@
 package hadoop.mapreduce.input;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -10,11 +12,13 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 import org.apache.parquet.bytes.BytesUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by wpy on 2017/6/15.
  */
 public class MyKeyValueRecordReader extends RecordReader<LongWritable, Text> {
+    private static Log log = LogFactory.getLog(MyKeyValueRecordReader.class);
     public static final String KEY_VALUE_SEPERATOR =
             "mapreduce.input.keyvaluelinerecordreader.key.value.separator";
 
@@ -58,16 +62,24 @@ public class MyKeyValueRecordReader extends RecordReader<LongWritable, Text> {
 
     public static void setKeyValue(LongWritable key, Text value, byte[] line,
                                    int lineLen, int pos) {
-        if (pos == -1) {
-            k.set(line, 0, lineLen);
-            key.set(BytesUtils.bytesToLong(k.getBytes()));
-            value.set("");
-        } else {
-            k.set(line, 0, pos);
-            key.set(BytesUtils.bytesToLong(k.getBytes()));
-            value.set(line, pos + 1, lineLen - pos - 1);
+        try {
+            k.clear();
+            if (pos == -1) {
+                k.set(line, 0, lineLen);
+                key.set(Long.valueOf(k.toString()));
+                value.set("");
+            } else {
+                k.set(line, 0, pos);
+                key.set(Long.valueOf(k.toString()));
+                value.set(line, pos + 1, lineLen - pos - 1);
+            }
+        } catch (NullPointerException e) {
+            log.error(e.getCause() + ": " + k.toString());
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            log.error(e.getCause() + ": " + new String(line));
         }
     }
+
 
     /**
      * Read key/value pair in a line.
