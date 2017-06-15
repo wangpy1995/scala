@@ -98,13 +98,13 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>com.sun</groupId>
                 <artifactId>tools</artifactId>
                 <version>${java.version}</version>
                 <scope>system</scope>
-                <systemPath>${java.home}/../lib/tools.jar</systemPath>
-            </dependency>
+                <systemPath>${java.home}/lib/jrt-fs.jar</systemPath>
+            </dependency>-->
             <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
