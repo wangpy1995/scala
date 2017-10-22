@@ -19,16 +19,17 @@
         <junit.version>4.12</junit.version>
         <external.protobuf.version>2.5.0</external.protobuf.version>
         <commons-logging.version>1.2</commons-logging.version>
+        <hbase.version>3.0.0-SNAPSHOT</hbase.version>
     </properties>
 
     <modules>
         <!--<module>../demo/</module>-->
         <!--<module>../hive-jdbc-scala</module>-->
-        <module>../howtouse</module>
-        <module>../location</module>
+        <!--<module>../howtouse</module>-->
+        <!--<module>../location</module>-->
         <!--<module>../spark2.11_mvn</module>-->
         <!--<module>../typeparameterized</module>-->
-        <!--<module>../scalalearning</module>-->
+        <module>../scalalearning</module>
         <!--<module>../hbase-spark</module>-->
         <!--<module>../sparksql-hbase</module>-->
         <!--<module>../sparksql-external</module>-->
@@ -56,12 +57,12 @@
             <dependency>
                 <artifactId>hbase-client</artifactId>
                 <groupId>org.apache.hbase</groupId>
-                <version>${project.version}</version>
+                <version>${hbase.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-server</artifactId>
-                <version>${project.version}</version>
+                <version>${hbase.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
