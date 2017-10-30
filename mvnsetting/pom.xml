@@ -46,17 +46,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-annotations</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-protocol</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>hbase-client</artifactId>
-                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-backup</artifactId>
                 <version>${hbase.version}</version>
             </dependency>
             <dependency>
@@ -78,21 +68,6 @@
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${commons-logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
-                <version>${hadoop-two.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>servlet-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
