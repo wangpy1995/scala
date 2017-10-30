@@ -1,16 +1,13 @@
 package netty.client
 
-import java.util.concurrent.TimeUnit
+import java.util.Date
 
 import io.netty.bootstrap.Bootstrap
-import io.netty.buffer.Unpooled
-import io.netty.channel.socket.SocketChannel
+import io.netty.buffer.ByteBuf
 import io.netty.channel._
 import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
-import io.netty.handler.codec.string.StringEncoder
-import io.netty.handler.codec.{DelimiterBasedFrameDecoder, LengthFieldBasedFrameDecoder, LineBasedFrameDecoder}
-import io.netty.handler.timeout.ReadTimeoutHandler
 
 class SimpleClient {
   def connect(host: String, port: Int) = {
@@ -26,35 +23,43 @@ class SimpleClient {
         .handler(new ChannelInitializer[SocketChannel] {
           override def initChannel(ch: SocketChannel) = {
             //数据包长度声明
-            ch.pipeline().addLast("lengthField", new LengthFieldBasedFrameDecoder(1024, 0, 2, 0, 2))
+            //            ch.pipeline().addLast("lengthField", new LengthFieldBasedFrameDecoder(1024, 0, 2, 0, 2))
             //换行分割
-            ch.pipeline().addLast(new LineBasedFrameDecoder(1024))
-            ch.pipeline().addLast(new StringEncoder())
+            //            ch.pipeline().addLast(new LineBasedFrameDecoder(1024))
+            //            ch.pipeline().addLast(new StringEncoder())
 
             //自定义分隔符
-            ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("\t".getBytes())))
-            ch.pipeline().addLast(new StringEncoder())
-
-            ch.pipeline().addLast(new ReadTimeoutHandler(300))
+            //            ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("\t".getBytes())))
+            //            ch.pipeline().addLast(new StringEncoder())
+            //
+            //            ch.pipeline().addLast(new ReadTimeoutHandler(300))
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter {
-              override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
-                case message: Int if message == 1 => println("alive"); ctx.writeAndFlush(msg)
-                case _ => println("dead"); ctx.fireChannelRead(msg)
+              override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = {
+                println(msg)
+                msg match {
+                  case message: ByteBuf =>
+                    val current = (message.readInt() - 220898800) * 1000L
+                    println(s"alive at time:[${new Date(current)}]")
+                    ctx.close()
+                  case _ => println("dead"); ctx.fireChannelRead(msg)
+                }
               }
 
               override def channelActive(ctx: ChannelHandlerContext): Unit = {
                 println("channel active")
-                ctx.executor().scheduleAtFixedRate(new Runnable {
+                //                ctx.writeAndFlush(Unpooled.copyInt(1))
+                super.channelActive(ctx)
+                /*ctx.executor().scheduleAtFixedRate(new Runnable {
                   override def run(): Unit = ctx.writeAndFlush(1)
-                }, 0, 9000, TimeUnit.MILLISECONDS)
+                }, 0, 9000, TimeUnit.MILLISECONDS)*/
               }
             })
           }
         })
 
-      val ch = bootStrap.connect(host, port).sync().channel()
+      val future = bootStrap.connect(host, port).sync()
       println(s"连接: $host:$port")
-      ch.closeFuture().sync()
+      future.channel().closeFuture().sync()
       println(s"断开连接:[$host:$port]")
     }
     finally
