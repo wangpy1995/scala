@@ -45,6 +45,7 @@ class SimpleServer {
                 val f = ctx.writeAndFlush(time)
                 f.addListener(new ChannelFutureListener {
                   override def operationComplete(future: ChannelFuture): Unit = {
+                    println("complete")
                     assert(f==future)
                     ctx.close()
                   }
@@ -52,6 +53,7 @@ class SimpleServer {
               }
 
               override def channelReadComplete(ctx: ChannelHandlerContext): Unit = {
+                println("read channel complete")
                 ctx.flush()
               }
 

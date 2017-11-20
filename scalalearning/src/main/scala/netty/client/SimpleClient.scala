@@ -1,9 +1,10 @@
 package netty.client
 
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 import io.netty.bootstrap.Bootstrap
-import io.netty.buffer.ByteBuf
+import io.netty.buffer.{ByteBuf, Unpooled}
 import io.netty.channel._
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
@@ -35,7 +36,6 @@ class SimpleClient {
             //            ch.pipeline().addLast(new ReadTimeoutHandler(300))
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter {
               override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = {
-                println(msg)
                 msg match {
                   case message: ByteBuf =>
                     val current = (message.readInt() - 220898800) * 1000L
@@ -48,10 +48,10 @@ class SimpleClient {
               override def channelActive(ctx: ChannelHandlerContext): Unit = {
                 println("channel active")
                 //                ctx.writeAndFlush(Unpooled.copyInt(1))
+                ctx.executor().scheduleAtFixedRate(new Runnable {
+                  override def run(): Unit = ctx.writeAndFlush(Unpooled.copyInt(1))
+                }, 0, 9000, TimeUnit.MILLISECONDS)
                 super.channelActive(ctx)
-                /*ctx.executor().scheduleAtFixedRate(new Runnable {
-                  override def run(): Unit = ctx.writeAndFlush(1)
-                }, 0, 9000, TimeUnit.MILLISECONDS)*/
               }
             })
           }

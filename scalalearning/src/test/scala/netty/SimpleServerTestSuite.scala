@@ -11,7 +11,6 @@ class SimpleServerTestSuite extends FunSuite {
   test("server") {
     val server = new SimpleServer()
     server.start("localhost",8080)
-    StdIn.readLine()
   }
 
   test("client"){
@@ -20,9 +19,8 @@ class SimpleServerTestSuite extends FunSuite {
       new Thread(new Runnable {
         override def run(): Unit =
           client.connect("localhost", 8080)
-      }).start()
+      }).run()
     }
-    StdIn.readLine()
   }
 
 }
