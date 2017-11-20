@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 import typeparam.privatedata.Queue
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.Random
 
 class GraphBuilderTestSuite extends FunSuite {
@@ -15,7 +15,7 @@ class GraphBuilderTestSuite extends FunSuite {
 
   test("build") {
     println(testData.mkString(","))
-    GraphBuilder.build(rules)(ArrayBuffer.empty ++= testData)
+    GraphBuilder.build(rules)(ListBuffer.empty ++= testData)
     println(GraphBuilder.x.mkString("\n"))
     println(GraphBuilder.sum)
   }

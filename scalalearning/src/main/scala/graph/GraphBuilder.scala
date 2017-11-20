@@ -25,30 +25,50 @@ object GraphBuilder {
     } else results += data
   }
 
-  private def bfs[T](rule: (T, T) => Boolean)(left: T, right: ArrayBuffer[T], queue: mutable.Queue[T], results: ArrayBuffer[T]): Unit = {
+  private def bfs[T](rule: (T, T) => Boolean)(left: T, right: ListBuffer[T], queue: mutable.Queue[T], results: ListBuffer[T]): Unit = {
+    val b = new ListBuffer[T]()
     var l: T = left
-    val a = right.filter(rule(left, _))
-    right --= a
-    queue.enqueue(a: _*)
+    results += l
+    var i = 0
+    right.remove(0)
+    right.foreach { r =>
+      i += 1
+      if (rule(l, r)) {
+        queue.enqueue(r)
+        i -= 1
+        right.remove(i)
+      }
+      sum+=1
+    }
     while (right.nonEmpty) {
       while (queue.nonEmpty) {
-        sum += 1
         l = queue.dequeue()
         results += l
-        val b = right.filter(rule(l, _))
-        right --= b
-        queue.enqueue(b: _*)
+        i=0
+        right.foreach { r =>
+          i += 1
+          if (rule(l, r)) {
+            queue.enqueue(r)
+            i -= 1
+            right.remove(i)
+          }
+          sum+=1
+        }
       }
       println(results.mkString(","))
-      if(right.length>1) {
+      x += results
+      if (right.length > 1) {
         results.clear()
         queue.enqueue(right.head)
+        right.remove(0)
+      }else{
+        println(right.mkString(","))
       }
     }
   }
 
-  def build[T](rule: (T, T) => Boolean)(data: ArrayBuffer[T]): ArrayBuffer[T] = {
-    val results = new ArrayBuffer[T]()
+  def build[T](rule: (T, T) => Boolean)(data: ListBuffer[T]): ListBuffer[T] = {
+    val results = new ListBuffer[T]()
     val queue = new mutable.Queue[T]()
     bfs(rule)(data.head, data, queue, results)
     results
