@@ -4,12 +4,13 @@ import org.apache.spark._
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
 
+import scala.annotation.meta.param
 import scala.reflect.ClassTag
 
 /**
   * Created by wpy on 2017/5/2.
   */
-class TestAccumulatorRDD[T: ClassTag, +U](@transient sc: SparkContext, rdd: RDD[T], state: Broadcast[Int])
+class TestAccumulatorRDD[T: ClassTag, +U](@(transient@param) sc: SparkContext, rdd: RDD[T], state: Broadcast[Int])
   extends RDD[T](sc, Nil) {
   override def compute(split: Partition, context: TaskContext): Iterator[T] = {
     val v = state.value
